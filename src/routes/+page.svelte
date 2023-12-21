@@ -12,17 +12,7 @@
 	]
 	let id = 1;
 
-	let categories: CatType[] = [
-		{
-			name: '',
-			color: colors[0],
-			id: id,
-			weight: 100,
-			items: [
-				{id: 1, pts: 0, total: 0, star: false}
-			]
-		}
-	]
+	let categories: CatType[] = []
 	let starred: boolean = false;
 	let starredItem: ItemType;
 	let starredCat: CatType;
@@ -103,17 +93,28 @@
 			const j = Math.floor(Math.random() * (i + 1)); 
 			[colors[i], colors[j]] = [colors[j], colors[i]]; 
 		}
-		categories[0].color = colors[0];
+		categories = [...categories, {
+			name: '',
+			color: colors[id % colors.length],
+			id: ++id,
+			weight: 100,
+			items: [
+				{id: 1, pts: 0, total: 0, star: false}
+			]
+		}];
 	})
 </script>
 
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Unna:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 </svelte:head>
 
 <main>
-	<h1 class="text-3xl py-8">what do i need on my final.com</h1>
+	<h1 class="text-3xl font-bold py-8">what do i need on my final.com</h1>
 	<div class="flex flex-row">
 		<div class="cats-container">
 			{#each categories as catData (catData.id)}
@@ -129,11 +130,11 @@
 	<div class="results">
 		{#if totalWeight != 100}
 			<div class="weight-warning">
-				<p>⚠️ Total weight is {totalWeight > 100 ? " greater than 100%" : " less than 100%"}. {totalWeight == 0 ? "Add percentage weighted for each category." : "Weights were adjusted to total 100%."}</p>
+				<p>⚠️ Total weight is {totalWeight > 100 ? " greater than 100%" : " less than 100%"}. {totalWeight == 0 ? "Add percentage weighted for each category." : "Weights were scaled to total 100%."}</p>
 			</div>
 		{/if}
 
-		<p class="text-3xl">Final Grade: {(100 * finalGrade || 0).toFixed(2).replace(/[.,]00$/, "")}%</p>
+		<p class="text-3xl font-bold">Overall grade: {(100 * finalGrade || 0).toFixed(2).replace(/[.,]00$/, "")}%</p>
 		
 		{#if starred}
 			<p class="text-2xl">You need a {(starNeeded || 0).toFixed(2).replace(/[.,]00$/, "")}/{starredItem.total} ({((100 * starNeeded / starredItem.total) || 0).toFixed(2).replace(/[.,]00$/, "")}%) on ★ to get a 
@@ -142,6 +143,19 @@
 					bind:value={starGoal}
 				>
 			%.</p>
+			<div class="-mt-4">
+				{#if starNeeded / starredItem.total > 1}
+					<p class="text-red-500">bro ur so cooked 💀</p>
+				{:else if starNeeded / starredItem.total > 0.9}
+					<p class="text-orange-400">the dream is alive!! 😸</p>
+				{:else if starNeeded / starredItem.total > 0.8}
+					<p class="text-emerald-600">i believe 🙏</p>
+				{:else if starNeeded / starredItem.total > 0.7}
+					<p class="text-blue-400">u got this 👍</p>
+				{:else}
+					<p class="text-purple-500">jus chillin 🦦</p>
+				{/if}
+			</div>
 		{:else}
 			<p class="text-2xl">★ an item to see how it'll affect your grade.</p>
 		{/if}
@@ -149,10 +163,12 @@
 </main>
 
 <style>
+	@import url('https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 	main {
 		display: flex;
 		flex-direction: column;
 		margin: 0 2rem;
+		font-family: 'Public Sans', sans-serif;
 	}
 	.cats-container {
 		display: grid;

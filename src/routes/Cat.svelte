@@ -64,7 +64,7 @@
     </div>
     <div class="flex flex-col gap-0">
         {#each catData.items as item (item.id)}
-            <div transition:fly={{duration: 100, y: -10}} class="inputs-row items-center">
+            <div transition:fly={{duration: 250, y: -10}} class="inputs-row items-center">
                 <button class="x-button"
                     on:click={() => deleteItem(item)}
                 >
