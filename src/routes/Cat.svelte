@@ -2,14 +2,36 @@
     import type { CatType, ItemType } from './types.js';
     import XSvg from './XSvg.svelte';
     import StarSvg from './StarSvg.svelte';
+	import { fly } from 'svelte/transition';
 
     export let catData: CatType;
     export let removeCat: (catData: CatType) => void;
     export let starItem: (catData: CatType, item: ItemType) => void;
+    export let deleteStar: () => void;
+
+    let id = 1;
+
+    function addItem () {
+        catData.items = [...catData.items, { 
+            id: ++id, 
+            pts: 0, 
+            total: 0, 
+            star: false 
+        }]
+    }
+
+    function deleteItem (item: ItemType) {
+        if (catData.items.length > 1) {
+            if (item.star) deleteStar();
+            catData.items = catData.items.filter(i => i !== item)
+        }
+    }
 </script>
 
 <div class="cat-container"
     style="--color: {catData.color}"
+    in:fly={{duration: 250, x: -20, opacity: 0}}
+    out:fly={{duration: 250, y: -20, opacity: 0}}
 >
     <div class="inputs-row items-start">
         <div class="flex flex-col flex-1" style="flex-grow: 2">
@@ -32,20 +54,19 @@
             <XSvg color={catData.color} />
         </button>
     </div>
-    <div class="inputs-row">
+    <div class="inputs-row -mb-2">
+        <!-- spacers -->
         <p class="x-button"></p>
-        <div class="flex-1 text-xs text-right pr-2">
-            Points
-        </div>
-        <p class="flex-1 text-xs pl-2">Total</p>
+        <p class="star-button"></p>
+        <p class="flex-1 text-xs text-right">Points</p>
+        <p class="w-2 text-xs"></p>
+        <p class="flex-1 text-xs">Total</p>
     </div>
     <div class="flex flex-col gap-0">
-        {#each catData.items as item}
-            <div class="inputs-row items-center">
+        {#each catData.items as item (item.id)}
+            <div transition:fly={{duration: 100, y: -10}} class="inputs-row items-center">
                 <button class="x-button"
-                    on:click={() => {
-                        if (catData.items.length > 1) catData.items = catData.items.filter(i => i !== item)
-                    }}
+                    on:click={() => deleteItem(item)}
                 >
                     <XSvg color={catData.color} />
                 </button>
@@ -70,7 +91,7 @@
     </p>
     <div>
         <button class="add-button"
-            on:click={() => catData.items = [...catData.items, { pts: 0, total: 0, star: false }]}
+            on:click={addItem}
         >
             Add
         </button>

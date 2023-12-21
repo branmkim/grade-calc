@@ -10,14 +10,16 @@
 		'71, 134, 206', // blue
 		'243, 180, 81', // yellow
 	]
+	let id = 1;
 
 	let categories: CatType[] = [
 		{
 			name: '',
-			weight: 0,
 			color: colors[0],
+			id: id,
+			weight: 100,
 			items: [
-				{pts: 0, total: 0, star: false}
+				{id: 1, pts: 0, total: 0, star: false}
 			]
 		}
 	]
@@ -62,23 +64,25 @@
 	function addCat () {
 		categories = [...categories, {
 			name: '',
+			color: colors[id % colors.length],
+			id: ++id,
 			weight: 0.00,
-			color: colors[categories.length % colors.length],
 			items: [
-				{pts: 0, total: 0, star: false}
+				{id: 1, pts: 0, total: 0, star: false}
 			]
 		}];
 	}
 
 	function removeCat (catData: CatType) {
 		if (categories.length > 1) {
+			if (catData.items.some(i => i.star)) deleteStar();
 			categories = categories.filter(c => c != catData);
 		}
 	}
 
 	function starItem (catData: CatType, item: ItemType) {
 		categories.forEach(c => {
-			c.items.forEach(i => {
+			c.items.forEach(i => {	
 				if (i === item) {
 					i.star = !i.star;
 					starred = i.star;
@@ -88,6 +92,10 @@
 			})
 		})
 		categories = categories
+	}
+
+	function deleteStar () {
+		starred = false;
 	}
 
 	onMount(() => {
@@ -108,10 +116,10 @@
 	<h1 class="text-3xl py-8">what do i need on my final.com</h1>
 	<div class="flex flex-row">
 		<div class="cats-container">
-			{#each categories as catData}
-				<Cat bind:catData={catData} {removeCat} {starItem}/>
+			{#each categories as catData (catData.id)}
+				<Cat bind:catData={catData} {removeCat} {starItem} {deleteStar}/>
 			{/each}
-			<button class="bg-gray-200 flex justify-center items-center w-8 h-24 rounded-md"
+			<button class="bg-gray-200 flex justify-center items-center w-8 max-h-full min-h-16 rounded-md"
 				on:click={addCat}
 			>
 				+
@@ -144,7 +152,7 @@
 	main {
 		display: flex;
 		flex-direction: column;
-		padding: 0 2rem 0 2rem;
+		margin: 0 2rem;
 	}
 	.cats-container {
 		display: grid;
@@ -155,11 +163,12 @@
 	.results {
 		position: sticky;
 		bottom: 0;
+		width: 100%;
+		padding-top: 1rem;
+		padding-bottom: 2rem;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		width: 100%;
-		padding: 2rem 0 2rem 0;
 		background-color: white;
 	}
 	.weight-warning {

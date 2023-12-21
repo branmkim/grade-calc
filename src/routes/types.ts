@@ -1,10 +1,12 @@
 export interface CatType {
     name: string;
-    weight: number;
     color: string;
+    id: number;
+    weight: number;
     items: ItemType[];
 }
 export interface ItemType {
+    id: number;
     pts: number;
     total: number;
     star: boolean;
